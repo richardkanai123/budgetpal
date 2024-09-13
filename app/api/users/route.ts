@@ -2,13 +2,13 @@
 
 import prisma from '@/lib/prisma';
 import { NextResponse } from 'next/server';
-import bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 export  async function GET(request: Request, { params }: { params: { id: string } }) {
    try {
        // find a user
        const user = await prisma.user.findUnique({
            where: {
-               id: parseInt(params.id),
+               id: params.id,
            }
        })
 
@@ -33,21 +33,51 @@ export  async function GET(request: Request, { params }: { params: { id: string 
 // register new user
 export async function POST(request: Request) {
     try {
-        const { name, email, password } = await request.json()
+        const { username, email, password } = await request.json()
+        // check if email is valid
+        if(!email || !email.includes('@')) {
+            return NextResponse.json({ message: 'Email is invalid' }, { status: 400 })
+        }
+        // check if password is valid
+        if(!password || password.length < 6) {
+            return NextResponse.json({ message: 'Password is invalid' }, { status: 400 })
+        }
+        // check if username is valid
+        if(!username || username.length < 5) {
+           return NextResponse.json({ message: 'Username is invalid' }, { status: 400 })
+        }
+
         // encrypt the password using bcrypt
         const hashedPassword = await bcrypt.hash(password, 10)
+
+        // check if user already exists in the database
+        const userExists = await prisma.user.findUnique({
+            where: {
+                email,
+            }
+        })
+
+        if(userExists) {
+           return NextResponse.json({ message: 'User already exists' }, { status: 400 })
+        } else {
+            
+
         // create a new user
       await prisma.user.create({
             data: {
-                username: name,
+                username,
                 email,
                 password: hashedPassword,
 
             }
         })
-        return NextResponse.json( { status: 201 })
+            return NextResponse.json({ status: 201 })
+        }
+            
     }
-    catch (error) {
-        return NextResponse.json({ error: 'Something went wrong' }, { status: 500 })
+    catch (error: unknown) {
+        console.log(error)
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+        return NextResponse.json({ error: `Something went wrong: ${errorMessage}` }, { status: 500 })
     }
 }

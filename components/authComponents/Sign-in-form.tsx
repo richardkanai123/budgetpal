@@ -50,13 +50,13 @@ const onSubmit = async (values: z.infer<typeof formSchema>) => {
 
   return (
     <Form {...form}>
-      <form autoComplete='off' onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full max-w-lg">
+      <form autoComplete='off' onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full max-w-lg bg-opacity-80 bg-slate-50 dark:bg-slate-900 p-4 rounded-lg shadow-lg">
         <FormField
           control={form.control}
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel className='text-lg'>Email</FormLabel>
               <FormControl>
                 <Input placeholder="Your email" {...field} />
               </FormControl>
@@ -70,7 +70,7 @@ const onSubmit = async (values: z.infer<typeof formSchema>) => {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel className='text-lg'>Password</FormLabel>
               <FormControl>
                 <Input placeholder="password" {...field} />
               </FormControl>
