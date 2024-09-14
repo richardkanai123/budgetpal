@@ -19,6 +19,7 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { toast } from '@/hooks/use-toast'
 import { useRouter } from 'next/navigation'
+import { registerUser } from '@/lib/helpers'
 
 
 const formSchema = z.object({
@@ -53,36 +54,36 @@ const SignUpForm = () => {
   
   // submit function
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
- 
-    const { username, email, password } = values
+
+    // make values formdata
+    const FormValues = new FormData()
+    FormValues.append('username', values.username)
+    FormValues.append('email', values.email)
+    FormValues.append('password', values.password)
+    FormValues.append('confirmpassword', values.confirmpassword)
 
 
     // wait for 3 sec then call response
-    await new Promise((resolve) => setTimeout(resolve, 3000))
+    await new Promise((resolve) => setTimeout(resolve, 2000))
  
     try {
-      // register userc
-      const response = await fetch('/api/users', {
-        method: 'POST',
-        body: JSON.stringify({
-          username,
-          email,
-          password,
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
+      const res = await registerUser(FormValues)
+      console.log(res)
 
-      const responseData = await response.json()
-
-      if (response.status === 201) {
-        console.log('success')
-        router.push('/sign-up/success')
-      }
-      else {
-        console.log( responseData.message)
-        throw new Error(responseData.message as string)
+      
+      if(res.success && res.status === 201) {
+        toast({
+          title: "Success",
+          description: "User registered successfully",
+          variant: "default",
+        })
+        router.push('/sign-in')
+      } else {
+        toast({
+          title: "Error",
+          description: res.error,
+          variant: "destructive",
+        })
       }
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'

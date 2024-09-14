@@ -1,61 +1,67 @@
-import NextAuth from "next-auth"
+import NextAuth, { AuthError, NextAuthConfig} from "next-auth"
 import Credentials from "next-auth/providers/credentials"
 import prisma from "./lib/prisma"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import * as bcrypt from "bcrypt"
- 
-export const { handlers, signIn, signOut, auth } = NextAuth({
-    adapter: PrismaAdapter(prisma),
-    providers: [
+   
+
+// auth options
+const authOptions: NextAuthConfig = {
+   adapter: PrismaAdapter(prisma),
+    secret: process.env.NEXTAUTH_SECRET,
+    session:{strategy:"jwt"},
+        providers: [
         Credentials({
-            name: "Credentials",
+            name: "credentials",
             credentials: {
-                email: {
-                    label: "Email",
-                    type: "email",
-                    placeholder: "Your email"
-                },
-                password: {
-                    label: "Password",
-                    type: "password",
-                    placeholder: "Your password"
-                }
+                email: { label: "Email", type: "text", placeholder: "Email" },
+                password: { label: "Password", type: "password" },
             },
 
             async authorize(credentials) {
-                // get email and password from credentials
-                const { email, password } = credentials as {
-                    email: string
-                    password: string
-                }
-                // get user from database
-                const userData = await prisma.user.findUnique({
-                    where: {
-                        email: email
+
+                console.table(credentials)
+
+                try {
+                    // check if credentials are provided
+                    if (!credentials?.email || !credentials?.password) {
+                        throw new AuthError('Please enter an email and password')
                     }
-                })
-                // if user not found
-                if (!userData) {
-                    throw new Error("User not found")
+                    // get user from database
+                    const user = await prisma.user.findUnique({
+                        where: {
+                            email: credentials.email as string,
+                        }
+                    })
+
+                    //    check if user exists
+                    if (!user) {
+                        throw new AuthError('User does not exist')
+                    } else {
+                        const isPasswordValid = await bcrypt.compare(credentials.password as string, user.password)
+                        if (!isPasswordValid) {
+                            throw new Error('Incorrect Password')
+                        }
+
+                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                        const { password, ...userWithoutPassword } = user
+                        return userWithoutPassword
+                    }
+                } catch (error) {
+                    if (error instanceof Error) {
+                        throw new Error(error.message)
+                    } else {
+                        throw new Error('An unknown error occurred')
+                    }
                 }
-                // compare the passwords using bcrypt
-                const passwordIsValid = await bcrypt.compare(password, userData.password)
-                
-                // if password is not valid
-                if (!passwordIsValid) {
-                    throw new Error("Invalid password")
-                    // return null
-                }
-                // return user
-                const user = {
-                    id: userData.id,
-                    name: userData.username,
-                    email: userData.email,
-                    password: userData.password
-                }
-                return user
             }
         })
     ],
-    secret: process.env.NEXTAUTH_SECRET,
-})
+
+   
+    pages: {
+        signIn: '/sign-in',
+        newUser: '/sign-up'
+    }
+}
+export const { handlers, signIn, signOut, auth } = NextAuth(authOptions)

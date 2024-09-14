@@ -16,7 +16,8 @@ import { LoaderPinwheel } from "lucide-react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-
+// import { useRouter } from 'next/navigation'
+import { signInWithCredentials } from '@/lib/helpers'
 
 const formSchema = z.object({
   email: z.string().email("Must be a valid email"),
@@ -28,10 +29,12 @@ const formSchema = z.object({
 const SignInForm = () => {
 
 
+  // const router = useRouter()
+
       const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    // mode: "all",
-    reValidateMode: "onSubmit",
+    mode: "all",
+    // reValidateMode: "onBlur",
     delayError: 300,
     shouldFocusError: true,
     shouldUnregister: true,
@@ -40,11 +43,36 @@ const SignInForm = () => {
   // submit function
 const onSubmit = async (values: z.infer<typeof formSchema>) => {
   
-  // simulate 3 seconds delay
-  await new Promise((resolve) => setTimeout(resolve, 3000))
-  console.log(values) 
-  // reset form
-  form.reset()
+  try {
+    const formData = new FormData()
+    formData.append('email', values.email)
+    formData.append('password', values.password)
+    
+    const responseData = await signInWithCredentials(formData)
+    if (!responseData) {
+      return;
+    }
+    if (responseData?.success) {
+      console.log('success')
+      window.location.replace('/')
+    } else {
+      form.setError('root', {
+        message: responseData.error,
+      });
+    }
+    
+  } catch (error) {
+    if (error instanceof Error) {
+      form.setError('root', {
+        message: error.message,
+      });
+    } else {
+      form.setError('root', {
+        message: 'An unknown error occurred',
+      });
+    }
+  }
+  
 }
 
 
@@ -72,12 +100,15 @@ const onSubmit = async (values: z.infer<typeof formSchema>) => {
             <FormItem>
               <FormLabel className='text-lg'>Password</FormLabel>
               <FormControl>
-                <Input placeholder="password" {...field} />
+                <Input type='password' placeholder="password" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+
+        {form.formState.errors.root && <p className='text-red-400 text-sm my-2'>{form.formState.errors.root.message}</p>}
+        
           <Button size="lg" type="submit" disabled={form.formState.isSubmitting}>
             {
               form.formState.isSubmitting ? <>
