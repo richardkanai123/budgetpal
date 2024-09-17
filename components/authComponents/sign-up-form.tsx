@@ -23,11 +23,11 @@ import { registerUser } from '@/lib/helpers'
 
 
 const formSchema = z.object({
-username: z.string().min(5, "Name must be at least 5 characters"),
+  username: z.string().min(5, "Name must be at least 5 characters"),
   email: z.string().email("Must be a valid email"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
-    //confirmpassword must match password
-    confirmpassword: z.string().min(6, "Password must be at least 6 characters"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  //confirmpassword must match password
+  confirmpassword: z.string().min(6, "Password must be at least 6 characters"),
 }).refine((data) => {
   if (data.password !== data.confirmpassword) {
     return false
@@ -44,14 +44,14 @@ const SignUpForm = () => {
   // router
   const router = useRouter()
 
-      const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     reValidateMode: "onBlur",
     delayError: 300,
     shouldFocusError: true,
     shouldUnregister: true,
   })
-  
+
   // submit function
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
 
@@ -65,16 +65,14 @@ const SignUpForm = () => {
 
     // wait for 3 sec then call response
     await new Promise((resolve) => setTimeout(resolve, 2000))
- 
+
     try {
       const res = await registerUser(FormValues)
-      console.log(res)
 
-      
-      if(res.success && res.status === 201) {
+      if (res.success && res.status === 201) {
         toast({
           title: "Success",
-          description: "User registered successfully",
+          description: "User registered successfully! Sign In Now",
           variant: "default",
         })
         router.push('/sign-in')
@@ -85,15 +83,15 @@ const SignUpForm = () => {
           variant: "destructive",
         })
       }
-  } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
-    toast({
-      title: "Error",
-      description: `Something went wrong, Failed to register user: ${errorMessage}`,
-      variant: "destructive",
-    })
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+      toast({
+        title: "Error",
+        description: `Something went wrong, Failed to register user: ${errorMessage}`,
+        variant: "destructive",
+      })
+    }
   }
-}
 
   return (
     <Form {...form}>
@@ -105,13 +103,13 @@ const SignUpForm = () => {
             <FormItem>
               <FormLabel className='text-lg'>Email</FormLabel>
               <FormControl>
-                <Input  type='email' placeholder="Your email" {...field} />
+                <Input type='email' placeholder="Your email" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-              
+
         <FormField
           control={form.control}
           name="username"
@@ -124,35 +122,35 @@ const SignUpForm = () => {
               <FormMessage />
             </FormItem>
           )}
-          />
-          
+        />
+
         <FormField
           control={form.control}
           name="password"
           render={({ field }) => (
             <FormItem>
-               <FormLabel className='text-lg'>Password</FormLabel>
+              <FormLabel className='text-lg'>Password</FormLabel>
               <FormControl>
                 <Input type='password' placeholder="password" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
-              />
-              
+        />
+
         <FormField
           control={form.control}
           name="confirmpassword"
           render={({ field }) => (
             <FormItem>
-                  <FormLabel className='text-lg'>Confirm Password</FormLabel>
-                    <FormDescription>
-                      Confirm password by typing same password as above
-                  </FormDescription>
+              <FormLabel className='text-lg'>Confirm Password</FormLabel>
+              <FormDescription>
+                Confirm password by typing same password as above
+              </FormDescription>
               <FormControl>
                 <Input type='password' placeholder="confirm password" {...field} />
-                  </FormControl>
-                
+              </FormControl>
+
               <FormMessage />
             </FormItem>
           )}
@@ -171,9 +169,9 @@ const SignUpForm = () => {
               </Button>
             )
           }
-              </div>
-          </form>
-      </Form>
+        </div>
+      </form>
+    </Form>
   )
 }
 

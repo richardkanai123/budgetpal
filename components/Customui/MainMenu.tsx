@@ -21,7 +21,7 @@ const MainMenu = () => {
 	const Links: LinkType[] = [
 		{
 			tag: "NEW",
-			url: "/newTransaction",
+			url: "/new-transaction",
 			icon: <ClipboardPlus className='w-12 h-12' />,
 		},
 		{

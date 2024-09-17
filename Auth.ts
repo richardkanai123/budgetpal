@@ -36,11 +36,11 @@ const authOptions: NextAuthConfig = {
 
                     //    check if user exists
                     if (!user) {
-                        throw new AuthError('User does not exist')
+                        return null
                     } else {
                         const isPasswordValid = await bcrypt.compare(credentials.password as string, user.password)
                         if (!isPasswordValid) {
-                            throw new Error('Incorrect Password')
+                            return null
                         }
 
                         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -57,7 +57,28 @@ const authOptions: NextAuthConfig = {
             }
         })
     ],
+        
+    callbacks: {
+        async jwt({ token, user }) {
+            if (user) {
+                token.id = user.id
+                token.email = user.email
+                token.name = user.name
+                token.picture = user.image
+            }
+            return token
+        },
 
+        async session({ session, token }) {
+            if (session?.user) {
+                session.user.email = token.email as string
+                session.user.id = token.id as string
+                session.user.name = token.name as string
+                session.user.image = token.picture as string
+            }
+            return session
+        }
+    },
    
     pages: {
         signIn: '/sign-in',

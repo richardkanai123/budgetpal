@@ -31,7 +31,7 @@ const SignInForm = () => {
 
   // const router = useRouter()
 
-      const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     mode: "all",
     // reValidateMode: "onBlur",
@@ -39,41 +39,41 @@ const SignInForm = () => {
     shouldFocusError: true,
     shouldUnregister: true,
   })
-  
+
   // submit function
-const onSubmit = async (values: z.infer<typeof formSchema>) => {
-  
-  try {
-    const formData = new FormData()
-    formData.append('email', values.email)
-    formData.append('password', values.password)
-    
-    const responseData = await signInWithCredentials(formData)
-    if (!responseData) {
-      return;
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+
+    try {
+      const formData = new FormData()
+      formData.append('email', values.email)
+      formData.append('password', values.password)
+
+      const responseData = await signInWithCredentials(formData)
+      if (!responseData) {
+        return;
+      }
+      if (responseData?.success) {
+        console.log('success')
+        window.location.replace('/')
+      } else {
+        form.setError('root', {
+          message: responseData.error,
+        });
+      }
+
+    } catch (error) {
+      if (error instanceof Error) {
+        form.setError('root', {
+          message: error.message,
+        });
+      } else {
+        form.setError('root', {
+          message: 'An unknown error occurred',
+        });
+      }
     }
-    if (responseData?.success) {
-      console.log('success')
-      window.location.replace('/')
-    } else {
-      form.setError('root', {
-        message: responseData.error,
-      });
-    }
-    
-  } catch (error) {
-    if (error instanceof Error) {
-      form.setError('root', {
-        message: error.message,
-      });
-    } else {
-      form.setError('root', {
-        message: 'An unknown error occurred',
-      });
-    }
+
   }
-  
-}
 
 
   return (
@@ -91,9 +91,9 @@ const onSubmit = async (values: z.infer<typeof formSchema>) => {
               <FormMessage />
             </FormItem>
           )}
-          />
-          
-                  <FormField
+        />
+
+        <FormField
           control={form.control}
           name="password"
           render={({ field }) => (
@@ -108,18 +108,18 @@ const onSubmit = async (values: z.infer<typeof formSchema>) => {
         />
 
         {form.formState.errors.root && <p className='text-red-400 text-sm my-2'>{form.formState.errors.root.message}</p>}
-        
-          <Button size="lg" type="submit" disabled={form.formState.isSubmitting}>
-            {
-              form.formState.isSubmitting ? <>
-                <span className="animate-spin">
-                  <LoaderPinwheel className="w-4 h-4" />
-                  </span>
-              </> : "Sign In"
-            }
+
+        <Button size="lg" type="submit" disabled={form.formState.isSubmitting}>
+          {
+            form.formState.isSubmitting ? <>
+              <span className="animate-spin">
+                <LoaderPinwheel className="w-4 h-4" />
+              </span>
+            </> : "Sign In"
+          }
         </Button>
       </form>
-      </Form>
+    </Form>
   )
 }
 
