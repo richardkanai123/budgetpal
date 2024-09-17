@@ -5,6 +5,7 @@ import { AuthError } from "next-auth"
 import prisma from "./prisma"
 import { auth } from "@/Auth"
 import { revalidatePath } from "next/cache"
+import { Transaction } from "@prisma/client"
 
 export async function signIn() {
     await naSignIn()
@@ -22,7 +23,6 @@ export async function signInWithCredentials(values: FormData): Promise<{
     const email = values.get('email') as string
     const password = values.get('password') as string
 
-    console.table({ email, password })
 
     try {
         await naSignIn('credentials', {
@@ -84,7 +84,6 @@ export async function registerUser(values: FormData) {
     const email = values.get('email') as string
     const password = values.get('password') as string
     const confirmPassword = values.get('confirmpassword') as string
-    console.table({ username, email, password, confirmPassword })
 
 
     try {
@@ -173,9 +172,9 @@ export async function AddNewTransaction(data: UserTransactionInput): Promise<{
                 transactiondate: data.transactionDate,
                 userId: session?.user?.id as string,
             }
-        }) 
+        })
 
-        if(!newTransaction) {
+        if (!newTransaction) {
             return {
                 success: false,
                 message: 'Transaction creation failed',
@@ -211,71 +210,49 @@ export async function AddNewTransaction(data: UserTransactionInput): Promise<{
 
 // fetch all transactions
 export async function fetchAllTransactions() {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/transaction`, {
-        method: 'GET',
-    })
-    const data = await res.json()
-    const session = await auth()
-
-    if(res.status === 401 || !session) {
-        return {
-            success: false,
-            error: 'Unauthorized',
-            status: 401,
+    try {
+        const session = await auth()
+        if (!session) {
+            return {
+                success: false,
+                message: 'Unauthorized',
+                status: 401,
+                data: null,
+            }
         }
-    }
 
-    if(res.status === 200) {
+        const data = await prisma.transaction.findMany({
+            where: {
+                userId: session?.user?.id as string,
+            },
+            orderBy: {
+                transactiondate: 'desc',
+            }
+
+        })
+        if (!data) {
+            return {
+                success: false,
+                message: 'No transactions found',
+                status: 404,
+                data: null,
+            }
+        }
+
         return {
             success: true,
             data: data,
             status: 200,
+            message: 'Transactions fetched successfully',
         }
-    }
-  else {
-        return {
-            success: false,
-            error: data.message,
-            status: 500,
-        }
-    }
-}
+    } catch (error) {
 
-// gets recent transactions 
-export async function getRecentTransactions() {
-try {
-        const session = await auth()
-    if(!session) {
-        return {
-            success: false,
-            message: 'Unauthorized',
-            status: 401,
-        }
-    }
-
-    const data = await prisma.transaction.findMany({
-        take: 5,
-        where: {
-            userId: session?.user?.id as string,
-        },
-        orderBy: {
-            transactiondate: 'desc',
-        }
-        
-    })
-
-    return {
-        success: true,
-        data: data,
-        status: 200,
-    }
-} catch (error) {
-    
-    if (error instanceof Error) {
+        if (error instanceof Error) {
             return {
                 success: false,
                 message: error.message,
                 status: 500,
+                data: null,
             }
         }
         else {
@@ -283,7 +260,108 @@ try {
                 success: false,
                 message: 'An unexpected error occurred',
                 status: 500,
+                data: null,
             }
         }
+    }
 }
+
+
+// gets recent transactions 
+export async function getRecentTransactions() {
+    try {
+        const session = await auth()
+        if (!session) {
+            return {
+                success: false,
+                message: 'Unauthorized',
+                status: 401,
+                data: null, 
+            }
+        }
+
+        const data = await prisma.transaction.findMany({
+            take: 7,
+            where: {
+                userId: session?.user?.id as string,
+            },
+            orderBy: {
+                transactiondate: 'desc',
+            }
+
+        })
+
+        revalidatePath('/')
+
+        return {
+            success: true,
+            data: data,
+            status: 200,
+            message: 'Transactions fetched successfully',
+        }
+    } catch (error) {
+
+        if (error instanceof Error) {
+            return {
+                success: false,
+                message: error.message,
+                status: 500,
+                data: null,
+            }
+        }
+        else {
+            return {
+                success: false,
+                message: 'An unexpected error occurred',
+                status: 500,
+                data: null,
+            }
+        }
+    }
+} 
+
+
+// Summarize transaction amounts into categories
+export async function summarizeTransactions() { 
+    const AllTransactions = await fetchAllTransactions()
+
+    if(!AllTransactions.success) {
+        return {
+            success: false,
+            message: 'Failed to fetch transactions',
+            status: 500,
+            data: null,
+        }
+    }
+    
+    // success but no transactions for this user
+    if (AllTransactions.success && (!AllTransactions.data || AllTransactions.data.length === 0)) {
+        return {
+            success: true,
+            message: 'No transactions found',
+            status: 200,
+            data: null
+        }
+    }
+
+    const transactions = AllTransactions.data as Transaction[]
+    const types = transactions.map(transaction => transaction.type)
+    const UniqueTypes = Array.from(new Set(types))
+    const summarizedTransactions = UniqueTypes.map(type => {
+        const typeTransactions = transactions.filter(transaction => transaction.type === type)
+        const totalAmount = typeTransactions.reduce((acc, transaction) => acc + transaction.amount, 0)
+        return {
+            type: type,
+            totalAmount: totalAmount,
+        }
+    })
+
+    
+    return {
+        success: true,
+        message: 'Transactions summarized successfully',
+        status: 200,
+        data: summarizedTransactions,
+    }
+    
 }

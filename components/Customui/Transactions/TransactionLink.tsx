@@ -18,6 +18,7 @@ type Transaction = {
 
 // date  format from fns
 import { formatDistanceToNow } from "date-fns";
+import { FormattedCurrency } from "@/lib/constants";
 
 const TransactionLink = ({ transaction }: {
 	transaction: Transaction;
@@ -56,7 +57,7 @@ const TransactionLink = ({ transaction }: {
 	return (
 		<Link
 			href={`/transactions/${id}`}
-			className=' w-full shadow-sm rounded-md flex justify-between items-center gap-2 py-2 px-4 hover:shadow-lg hover:bg-slate-300 dark:hover:bg-slate-700 transition-all ease-linear cursor-pointer'>
+			className=' w-full shadow-sm rounded-md flex justify-between items-center gap-2 p-2 hover:shadow-lg hover:bg-slate-300 dark:hover:bg-slate-700 transition-all ease-linear cursor-pointer'>
 			<div className='flex gap-4 items-center'>
 				<div className='w-fit flex items-center justify-between rounded-full bg-slate-300 dark:bg-sky-950 p-2'>
 					{renderIcon(type)}
@@ -65,9 +66,7 @@ const TransactionLink = ({ transaction }: {
 				<div className='flex flex-col'>
 					<p className='text-base font-semibold'>{category}</p>
 					<p className='text-xs md:hidden  text-muted-foreground '>
-						{/* cut descrption to 3 words only */}
 						{description.split(" ").slice(0, 2)}...
-
 					</p>
 					<p className='text-xs hidden md:inline-block  text-slate-500 '>
 						{description}
@@ -75,8 +74,10 @@ const TransactionLink = ({ transaction }: {
 				</div>
 			</div>
 			<div className='flex flex-col self-end text-right'>
-				<p className='text-lg font-bold'>{amount}</p>
-				<p className='text-xs text-muted-foreground opacity-70 dark:opacity-45 '>
+				<p className='text-sm font-semibold'>{
+					FormattedCurrency(amount, 'KES')
+				}</p>
+				<p className='text-xs italic text-muted-foreground opacity-70 dark:opacity-45 '>
 					{formattedDate}
 				</p>
 			</div>

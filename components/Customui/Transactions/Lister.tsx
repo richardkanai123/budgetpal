@@ -8,6 +8,7 @@ import { Suspense, useMemo } from "react";
 import { PackagePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TransactionsFilter } from "./Filter";
+import { FormattedCurrency } from "@/lib/constants";
 
 type Transaction = {
 	id: string;
@@ -84,22 +85,24 @@ const TransactionsLister = ({ data }: { data: Transaction[] }) => {
 	}
 
 	return (
-		<div className='w-full mx-auto flex flex-col gap-4'>
-			<p className="text-right text-lg font-semibold">Total: {totalAmount.toFixed(2)}</p>
+		<div className='w-full mx-auto flex flex-col gap-4 px-4'>
+			<p className="text-right text-lg font-semibold">Total Amount: {
+				FormattedCurrency(totalAmount, 'KES')
+			}</p>
 			<div className='w-full mx-auto px-2 flex items-center'>
 
 				<TransactionsFilter />
 			</div>
 
 			<ScrollArea
-				className={cn("mx-auto w-full flex flex-col gap-6 px-2 max-h-[600px]")}>
+				className={cn("mx-auto w-full flex flex-col gap-6 px-2 ")}>
 				{filteredData && filteredData?.length > 0 ? (
 					filteredData?.map((transaction) => (
 						<Suspense
 							key={transaction.id}
 							fallback={<div>Loading...</div>}>
 							<TransactionLink transaction={transaction} />
-							<Separator className='my-1 dark:bg-transparent' />
+							<Separator className='my-2 dark:bg-transparent' />
 						</Suspense>
 					))
 				) : (
@@ -111,5 +114,4 @@ const TransactionsLister = ({ data }: { data: Transaction[] }) => {
 		</div>
 	);
 };
-
 export default TransactionsLister;

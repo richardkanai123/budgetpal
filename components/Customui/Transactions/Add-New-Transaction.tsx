@@ -116,7 +116,7 @@ export default function NewTransaction() {
         catch (error) {
             toast({
                 title: "Transaction failed",
-                description: 'Unexpected error!',
+                description: 'Unexpected error occured!',
                 duration: 2000,
                 variant: "destructive",
             })
