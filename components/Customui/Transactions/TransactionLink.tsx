@@ -7,8 +7,21 @@ import {
 	WalletMinimal,
 } from "lucide-react";
 import Link from "next/link";
+type Transaction = {
+	id: string;
+	transactiondate: Date;
+	amount: number;
+	type: string;
+	category: string;
+	description: string;
+};
 
-const TransactionLink = ({ transaction }: { transaction: any }) => {
+// date  format from fns
+import { formatDistanceToNow } from "date-fns";
+
+const TransactionLink = ({ transaction }: {
+	transaction: Transaction;
+}) => {
 	const renderIcon = (type: string) => {
 		switch (type) {
 			case "expense":
@@ -29,12 +42,16 @@ const TransactionLink = ({ transaction }: { transaction: any }) => {
 
 	const {
 		id,
-    date,
-    amount,
-    type,
-    category,
-    description,
+		transactiondate,
+		amount,
+		type,
+		category,
+		description,
 	} = transaction;
+
+	const formattedDate = formatDistanceToNow(new Date(transactiondate), {
+		addSuffix: true,
+	});
 
 	return (
 		<Link
@@ -47,19 +64,20 @@ const TransactionLink = ({ transaction }: { transaction: any }) => {
 
 				<div className='flex flex-col'>
 					<p className='text-base font-semibold'>{category}</p>
-					<p className='text-xs md:hidden  text-slate-500 '>
-						{/* cut descrption to 3 words and add... */}
-						{description.split(" ").slice(0, 3).join(" ")}...
+					<p className='text-xs md:hidden  text-muted-foreground '>
+						{/* cut descrption to 3 words only */}
+						{description.split(" ").slice(0, 2)}...
+
 					</p>
 					<p className='text-xs hidden md:inline-block  text-slate-500 '>
 						{description}
 					</p>
 				</div>
 			</div>
-			<div className='flex flex-col'>
+			<div className='flex flex-col self-end text-right'>
 				<p className='text-lg font-bold'>{amount}</p>
 				<p className='text-xs text-muted-foreground opacity-70 dark:opacity-45 '>
-					{date}
+					{formattedDate}
 				</p>
 			</div>
 		</Link>

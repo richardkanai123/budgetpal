@@ -211,11 +211,13 @@ export async function AddNewTransaction(data: UserTransactionInput): Promise<{
 
 // fetch all transactions
 export async function fetchAllTransactions() {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/transaction`)
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/transaction`, {
+        method: 'GET',
+    })
     const data = await res.json()
+    const session = await auth()
 
-
-    if(res.status === 401) {
+    if(res.status === 401 || !session) {
         return {
             success: false,
             error: 'Unauthorized',
@@ -237,4 +239,51 @@ export async function fetchAllTransactions() {
             status: 500,
         }
     }
+}
+
+// gets recent transactions 
+export async function getRecentTransactions() {
+try {
+        const session = await auth()
+    if(!session) {
+        return {
+            success: false,
+            message: 'Unauthorized',
+            status: 401,
+        }
+    }
+
+    const data = await prisma.transaction.findMany({
+        take: 5,
+        where: {
+            userId: session?.user?.id as string,
+        },
+        orderBy: {
+            transactiondate: 'desc',
+        }
+        
+    })
+
+    return {
+        success: true,
+        data: data,
+        status: 200,
+    }
+} catch (error) {
+    
+    if (error instanceof Error) {
+            return {
+                success: false,
+                message: error.message,
+                status: 500,
+            }
+        }
+        else {
+            return {
+                success: false,
+                message: 'An unexpected error occurred',
+                status: 500,
+            }
+        }
+}
 }

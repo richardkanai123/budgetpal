@@ -90,7 +90,7 @@ export default function NewTransaction() {
             const response = await AddNewTransaction(data)
             if (response.success) {
                 toast({
-                    title: "Transaction added successfully",
+                    title: "Success",
                     description: "Transaction added successfully",
                     duration: 2000,
                     variant: "default",

@@ -1,19 +1,28 @@
 import React from 'react'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { transactions } from '@/lib/dummyData'
-import { fetchAllTransactions } from '@/lib/helpers'
+// import { transactions } from '@/lib/dummyData'
+// import { fetchAllTransactions } from '@/lib/helpers'
 import TransactionLink from './TransactionLink'
+// import prisma from '@/lib/prisma'
+// import { auth } from '@/Auth'
+import { getRecentTransactions } from '@/lib/helpers'
 
 const RecentTransactions = async () => {
-  const data = await fetchAllTransactions()
-  console.log(data)
 
+  const res = await getRecentTransactions()
+  if (!res.success) {
+    return null
+  }
+  const transactions = res.data
+
+  if (!transactions || transactions.length === 0) {
+    return <h1 className="text-muted-foreground">No recent transactions</h1>
+  }
 
   return (
     <ScrollArea
       className="mx-auto w-full flex flex-col gap-6 px-2 max-h-[400px]">
       {
-
         transactions.map((item) => (
           <TransactionLink transaction={item} key={item.id} />
         ))}
