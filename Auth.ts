@@ -20,7 +20,7 @@ const authOptions: NextAuthConfig = {
 
             async authorize(credentials) {
 
-                console.table(credentials)
+                // console.table(credentials)
 
                 try {
                     // check if credentials are provided

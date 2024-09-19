@@ -18,6 +18,7 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 // import { useRouter } from 'next/navigation'
 import { signInWithCredentials } from '@/lib/helpers'
+import Link from 'next/link'
 
 const formSchema = z.object({
   email: z.string().email("Must be a valid email"),
@@ -109,6 +110,8 @@ const SignInForm = () => {
 
         {form.formState.errors.root && <p className='text-red-400 text-sm my-2'>{form.formState.errors.root.message}</p>}
 
+
+
         <Button size="lg" type="submit" disabled={form.formState.isSubmitting}>
           {
             form.formState.isSubmitting ? <>
@@ -118,6 +121,11 @@ const SignInForm = () => {
             </> : "Sign In"
           }
         </Button>
+
+        {/* forgot password */}
+        <div className="w-full my-4">
+          <Link href="/reset-password" className="text-right underline hover:text-blue-400 text-blue-500 hover:underline">Forgot password?</Link>
+        </div>
       </form>
     </Form>
   )

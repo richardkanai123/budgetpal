@@ -59,29 +59,31 @@ export async function POST(req: Request) {
 export async function GET() {
     try {
         const session = await auth();
-        if (!session) {
-            return NextResponse.json({message: 'Unauthorised'}, { status: 401 });
+        
+        if (!session || !session.user?.id) {
+            console.log("Session or user ID missing");
+            return NextResponse.json({ message: 'Session invalid or expired' }, { status: 401 });
         }
+
+        console.log("User authenticated:", session.user.id);
         const transactions = await prisma.transaction.findMany({
             where: {
-                userId: session.user?.id as string,
+                userId: session.user.id,
             },
             orderBy: {
                 transactiondate: "desc",
             },
         });
-        return NextResponse.json(transactions, {
-            status: 200,
-        });
-    } catch (error) {
-        if (error instanceof Error) {
-            return NextResponse.json({ message: error.message }, {
-                status: 500,
-            });
-        } else {
-            return NextResponse.json({ message: "An unknown error occurred" }, {
-                status: 500,
-            });
+
+        if (!transactions.length) {
+            console.log("No transactions found for user:", session.user.id);
+            return NextResponse.json({ message: 'No transactions found' }, { status: 204 });
         }
+
+        console.log("Transactions retrieved successfully");
+        return NextResponse.json(transactions, { status: 200 });
+    } catch (error) {
+        console.error("Error in GET transaction:", error);
+        return NextResponse.json({ message: "An error occurred while fetching transactions" }, { status: 500 });
     }
 }

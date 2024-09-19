@@ -136,6 +136,78 @@ export async function registerUser(values: FormData) {
 }
 
 
+// Reset user password
+export async function resetPassword(values: {
+    email: string;
+    password: string;
+    confirmPassword: string;
+}) {
+    const { email, password, confirmPassword } = values
+    if (password !== confirmPassword) {
+        return {
+            success: false,
+            message: 'Passwords do not match',
+            status: 400,
+        }
+    }
+
+    try {
+        const usersURL = `${process.env.NEXT_PUBLIC_BASE_URL}/api/users/reset-password`
+
+        if (!usersURL) {
+            return {
+                success: false,
+                message: 'Something went wrong',
+                status: 500,
+            }
+        }
+
+        const Response = await fetch(usersURL, {
+            method: 'POST',
+            body: JSON.stringify({
+                email,
+                password,
+                confirmPassword,
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+
+        const data = await Response.json()
+
+        if (Response.status === 200) {
+            return {
+                success: true,
+                message: data.message as string,
+                status: 200,
+            }
+        } else
+            return {
+                success: false,
+                message: data.message as string,
+                status: Response.status,
+            }
+    } catch (error) {
+        if (error instanceof Error) {
+            return {
+                success: false,
+                message: error.message,
+                status: 500,
+            }
+        } else
+            return {
+                success: false,
+                message: 'Something went wrong',
+                status: 500,
+            }
+    }
+}
+
+
+
+
+
 // Add new Transaction
 
 type UserTransactionInput = {
@@ -276,7 +348,7 @@ export async function getRecentTransactions() {
                 success: false,
                 message: 'Unauthorized',
                 status: 401,
-                data: null, 
+                data: null,
             }
         }
 
@@ -318,14 +390,14 @@ export async function getRecentTransactions() {
             }
         }
     }
-} 
+}
 
 
 // Summarize transaction amounts into categories
-export async function summarizeTransactions() { 
+export async function summarizeTransactions() {
     const AllTransactions = await fetchAllTransactions()
 
-    if(!AllTransactions.success) {
+    if (!AllTransactions.success) {
         return {
             success: false,
             message: 'Failed to fetch transactions',
@@ -333,7 +405,7 @@ export async function summarizeTransactions() {
             data: null,
         }
     }
-    
+
     // success but no transactions for this user
     if (AllTransactions.success && (!AllTransactions.data || AllTransactions.data.length === 0)) {
         return {
@@ -356,12 +428,12 @@ export async function summarizeTransactions() {
         }
     })
 
-    
+
     return {
         success: true,
         message: 'Transactions summarized successfully',
         status: 200,
         data: summarizedTransactions,
     }
-    
+
 }

@@ -63,10 +63,10 @@ const BalanceCard = async () => {
 				</CardHeader>
 				<CardContent className="w-full flex align-middle justify-between text-center">
 					<div className="flex-1">
-						<p className='text-base font-semibold  text-lime-500'>Income: {FormattedCurrency(totalIncome as number, 'KES')}</p>
+						<p className='text-base font-semibold  text-lime-500'>Income: <br /> {FormattedCurrency(totalIncome as number, 'KES')}</p>
 					</div>
 					<div className="flex-1">
-						<p className='text-base font-semibold text-yellow-300'>Expense: {FormattedCurrency(totalExpense as number, 'KES')}</p>
+						<p className='text-base font-semibold text-yellow-300'>Expense: <br /> {FormattedCurrency(totalExpense as number, 'KES')}</p>
 					</div>
 				</CardContent>
 				<CardFooter>

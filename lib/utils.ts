@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 
-type Transaction = {
+export type Transaction = {
   id: string;
   transactiondate: Date;
   amount: number;
