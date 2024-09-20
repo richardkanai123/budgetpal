@@ -4,31 +4,14 @@ import MainMenu from '@/components/Customui/MainMenu'
 import RecentTransactions from '@/components/Customui/Transactions/RecentTransactions'
 import { ArrowBigRight } from 'lucide-react'
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import React, { Suspense } from 'react'
 
 const MainPage = async () => {
   const session = await auth()
 
   if (!session) {
-    return (
-      <div className='mx-auto min-h-screen flex flex-col px-4 transition-all ease-linear '>
-        <div className='flex flex-col gap-8'>
-          <h1 className='text-2xl font-semibold text-lime-600'>
-            Welcome to BudgetPal!
-          </h1>
-          <p className='text-lg text-gray-600'>
-            Please sign in to continue.
-          </p>
-          <Link
-            href='/sign-in'
-            className='flex items-center content-center rounded-md text-lime-700 hover:text-lime-500 text-right transition-all duration-2000 font-semibold ease-linear animate-pulse delay-3000  hover:animate-none hover:bg-lime-500 hover:bg-opacity-10 hover:px-3 '>
-            <ArrowBigRight className='mr-2' />
-            Sign in Now
-          </Link>
-        </div>
-      </div>
-    )
-
+    redirect('/sign-in')
   } else
 
     return (

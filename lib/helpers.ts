@@ -550,4 +550,60 @@ export const fetchTransactionsByCategory = async (category: string) => {
                 }
             }
         }
+}
+    
+
+// get transactions given category
+export const FetchAllTransactionsByType = async (type: string) => {
+    try {
+        const session = await auth()
+        if (!session) {
+            return {
+                success: false,
+                message: 'Unauthorized',
+                status: 401,
+                data: null,
+            }
+        }
+            
+            const data = await prisma.transaction.findMany({
+                where: {
+                    userId: session?.user?.id as string,
+                    type: type,
+                },
+            })
+            if (!data) {
+                return {
+                    success: true,
+                    message: 'No transactions found',
+                    status: 404,
+                    data: null,
+                }
+            }
+            return {
+                success: true,
+                data: data,
+                status: 200,
+                message: 'Transactions fetched successfully',
+            }
+        }
+    
+        catch (error) {
+            if (error instanceof Error) {
+                return {
+                    success: false,
+                    message: error.message,
+                    status: 500,
+                    data: null,
+                }
+            }
+            else {
+                return {
+                    success: false,
+                    message: 'An unexpected error occurred',
+                    status: 500,
+                    data: null,
+                }
+            }
+        }
     }

@@ -7,7 +7,7 @@ export const expenses = [
 	"rent",
 	"entertainment",
 	"healthcare",
-	"debt payment",
+	"debt",
 	"asset purchase",
 	"gift",
 	"church",

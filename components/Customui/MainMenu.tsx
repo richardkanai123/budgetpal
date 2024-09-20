@@ -3,7 +3,6 @@ import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import {
 	ArrowDownToLine,
 	ArrowUpToLine,
-	CalendarRangeIcon,
 	ClipboardPlus,
 	Handshake,
 	WalletMinimal,
@@ -44,12 +43,11 @@ const MainMenu = () => {
 			url: "/reports/debt",
 			icon: <Handshake className='w-12 h-12' />,
 		},
-
-		{
-			tag: "Monthly",
-			url: "/reports/monthly",
-			icon: <CalendarRangeIcon className='w-10 h-10' />,
-		},
+		// {
+		// 	tag: "Monthly",
+		// 	url: "/reports/monthly",
+		// 	icon: <CalendarRangeIcon className='w-10 h-10' />,
+		// },
 	];
 
 	// change link colors depending on tag
