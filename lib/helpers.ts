@@ -353,7 +353,7 @@ export async function getRecentTransactions() {
         }
 
         const data = await prisma.transaction.findMany({
-            take: 7,
+            take: 5,
             where: {
                 userId: session?.user?.id as string,
             },
@@ -362,9 +362,14 @@ export async function getRecentTransactions() {
             }
 
         })
-
-        revalidatePath('/')
-
+        if (!data) {
+            return {
+                success: false,
+                message: 'No transactions found',
+                status: 404,
+                data: null,
+            }
+        }
         return {
             success: true,
             data: data,
@@ -490,8 +495,7 @@ export const fetchTransactionById = async (id: string) => {
                 }
             }
         }
-}
-    
+}    
 
 // get transactions given category
 export const fetchTransactionsByCategory = async (category: string) => {

@@ -19,7 +19,7 @@ import { z } from "zod"
 // import { useRouter } from 'next/navigation'
 import { signInWithCredentials } from '@/lib/helpers'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 
 const formSchema = z.object({
   email: z.string().email("Must be a valid email"),

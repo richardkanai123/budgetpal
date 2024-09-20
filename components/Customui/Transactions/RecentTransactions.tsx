@@ -10,13 +10,14 @@ import { getRecentTransactions } from '@/lib/helpers'
 const RecentTransactions = async () => {
 
   const res = await getRecentTransactions()
-  if (!res.success) {
-    return null
-  }
   const transactions = res.data
 
+  if (!res.success) {
+    return <p>{res.message}</p>
+  }
+
   if (!transactions || transactions.length === 0) {
-    return <h1 className="text-muted-foreground">No recent transactions</h1>
+    return <p className="text-base ">No recent transactions</p>
   }
 
   return (
