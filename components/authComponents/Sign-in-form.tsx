@@ -19,6 +19,7 @@ import { z } from "zod"
 // import { useRouter } from 'next/navigation'
 import { signInWithCredentials } from '@/lib/helpers'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 
 const formSchema = z.object({
   email: z.string().email("Must be a valid email"),
@@ -30,7 +31,7 @@ const formSchema = z.object({
 const SignInForm = () => {
 
 
-  // const router = useRouter()
+  const router = useRouter()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -54,8 +55,7 @@ const SignInForm = () => {
         return;
       }
       if (responseData?.success) {
-        console.log('success')
-        window.location.replace('/')
+        router.replace('/')
       } else {
         form.setError('root', {
           message: responseData.error,

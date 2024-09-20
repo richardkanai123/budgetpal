@@ -437,3 +437,113 @@ export async function summarizeTransactions() {
     }
 
 }
+
+
+// fetch transactiom given id
+export const fetchTransactionById = async (id: string) => {
+    try {
+        const session = await auth()
+        if (!session) {
+            return {
+                success: false,
+                message: 'Unauthorized',
+                status: 401,
+                data: null,
+            }
+        }
+        const data = await prisma.transaction.findUnique({
+            where: {
+                id: id, 
+                userId: session?.user?.id as string,
+            },
+        })
+        if (!data) {
+            return {
+                success: false,
+                message: 'Transaction not found',
+                status: 404,
+                data: null,
+            }
+        }
+        return {
+            success: true,
+            data: data,
+            status: 200,
+            message: 'Transaction fetched successfully'
+        }
+        
+    } catch (error) {
+            if (error instanceof Error) {
+                return {
+                    success: false,
+                    message: error.message,
+                    status: 500,
+                    data: null,
+                }
+            }
+            else {
+                return {
+                    success: false,
+                    message: 'An unexpected error occurred',
+                    status: 500,
+                    data: null,
+                }
+            }
+        }
+}
+    
+
+// get transactions given category
+export const fetchTransactionsByCategory = async (category: string) => {
+    try {
+        const session = await auth()
+        if (!session) {
+            return {
+                success: false,
+                message: 'Unauthorized',
+                status: 401,
+                data: null,
+            }
+        }
+            
+            const data = await prisma.transaction.findMany({
+                where: {
+                    userId: session?.user?.id as string,
+                    category: category,
+                },
+            })
+            if (!data) {
+                return {
+                    success: true,
+                    message: 'No transactions found',
+                    status: 404,
+                    data: null,
+                }
+            }
+            return {
+                success: true,
+                data: data,
+                status: 200,
+                message: 'Transactions fetched successfully',
+            }
+        }
+    
+        catch (error) {
+            if (error instanceof Error) {
+                return {
+                    success: false,
+                    message: error.message,
+                    status: 500,
+                    data: null,
+                }
+            }
+            else {
+                return {
+                    success: false,
+                    message: 'An unexpected error occurred',
+                    status: 500,
+                    data: null,
+                }
+            }
+        }
+    }

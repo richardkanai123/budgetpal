@@ -1,6 +1,6 @@
 import TransactionsLister from '@/components/Customui/Transactions/Lister'
 import { Button } from '@/components/ui/button'
-import { fetchAllTransactions, getRecentTransactions } from '@/lib/helpers'
+import { fetchAllTransactions } from '@/lib/helpers'
 import { Transaction } from '@prisma/client'
 import { Upload } from 'lucide-react'
 import Link from 'next/link'
