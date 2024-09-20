@@ -2,16 +2,14 @@ import { auth } from '@/Auth'
 import ServerAuthButton from '@/components/authComponents/ServerAuthButton'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
+import { redirect } from 'next/navigation'
 import React from 'react'
 
 const ProfilePage = async () => {
   const session = await auth()
 
   if (!session) {
-    return <div className='mx-auto flex flex-col items-center align-middle gap-2'>
-      <p>You are currently not logged in</p>
-      <ServerAuthButton />
-    </div>
+    redirect('/sign-in')
   }
 
 
