@@ -86,7 +86,7 @@ const TransactionsLister = ({ data }: { data: Transaction[] }) => {
 
 	return (
 		<div className='w-full mx-auto flex flex-col gap-4 px-4'>
-			<p className="text-right text-lg font-semibold">Total Amount: {
+			<p className="text-left text-lg font-bold">Total Amount: {
 				FormattedCurrency(totalAmount, 'KES')
 			}</p>
 			<div className='w-full mx-auto px-2 flex items-center'>

@@ -4,7 +4,6 @@ import { cn } from "@/lib/utils";
 import {
 	Card, CardContent,
 	CardDescription,
-	CardFooter,
 	CardHeader,
 	CardTitle
 } from "../ui/card";
@@ -46,7 +45,13 @@ const BalanceCard = async () => {
 		const totalExpense = data?.find(ts => ts.type === "expense")?.totalAmount || 0
 		const totalSaving = data?.find(ts => ts.type === "saving")?.totalAmount || 0
 		const totalInvestment = data?.find(ts => ts.type === "investment")?.totalAmount || 0
-		const totalBalance = (totalIncome as number) - (totalExpense as number) - (totalSaving as number) - (totalInvestment as number)
+		const totalBalance = (totalIncome as number) - ((totalExpense as number) + (totalSaving as number) + (totalInvestment as number))
+
+		const ExpensePercentage = (totalExpense / totalIncome) * 100
+		const SavingPercentage = (totalSaving / totalIncome) * 100
+		const InvestmentPercentage = (totalInvestment / totalIncome) * 100
+		const BalancePercentage = (totalBalance / totalIncome) * 100
+
 
 
 		return (
@@ -56,25 +61,29 @@ const BalanceCard = async () => {
 				)}
 				x-chunk='balance-card'>
 				<CardHeader className='pb-2'>
-					<CardDescription className='text-xs'>Hello {session?.user?.name} </CardDescription>
-					<CardTitle className='text-4xl text-center'>
+					<CardDescription className='text-xs'>Balance </CardDescription>
+					<CardTitle className='text-4xl font-semibold  text-center'>
 						{FormattedCurrency(totalBalance, 'KES')}
 					</CardTitle>
+					<Progress value={Math.round(BalancePercentage)} className="w-full  animate-in fade-in-60 duration-[5000]" />
 				</CardHeader>
-				<CardContent className="w-full flex align-middle justify-between text-center">
-					<div className="flex-1">
-						<p className='text-base font-semibold  text-lime-500'>Income: <br /> {FormattedCurrency(totalIncome as number, 'KES')}</p>
+				<CardContent className="w-full ">
+					<div className="w-full flex align-middle justify-between text-center">
+						<div className="flex-1">
+							<p className='text-base font-semibold  text-lime-500'>Income: <br /> {FormattedCurrency(totalIncome as number, 'KES')}</p>
+						</div>
+						<div className="flex-1">
+							<p className='text-base font-semibold text-yellow-300'>Expense: <br /> {FormattedCurrency(totalExpense as number, 'KES')}</p>
+						</div>
 					</div>
-					<div className="flex-1">
-						<p className='text-base font-semibold text-yellow-300'>Expense: <br /> {FormattedCurrency(totalExpense as number, 'KES')}</p>
+
+					<div className="w-full flex text-xs text-muted-foreground justify-around items-center align-middle my-2">
+						<span>Expense: {Math.round(ExpensePercentage)}%</span>
+						<span>Savings: {Math.round(SavingPercentage)}%</span>
+						<span>Investments: {Math.round(InvestmentPercentage)}%</span>
 					</div>
 				</CardContent>
-				<CardFooter>
-					<Progress
-						value={25}
-						aria-label='25% increase'
-					/>
-				</CardFooter>
+
 			</Card >
 		);
 	}

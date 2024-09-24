@@ -4,7 +4,7 @@ import {
 	ArrowDownToLine,
 	ArrowUpToLine,
 	ClipboardPlus,
-	Handshake,
+	// Handshake,
 	WalletMinimal,
 } from "lucide-react";
 import Link from "next/link";
@@ -38,11 +38,11 @@ const MainMenu = () => {
 			url: "/reports/expense",
 			icon: <ArrowDownToLine className='w-12 h-12' />,
 		},
-		{
-			tag: "Debt",
-			url: "/reports/debt",
-			icon: <Handshake className='w-12 h-12' />,
-		},
+		// {
+		// 	tag: "Debt",
+		// 	url: "/reports/debt",
+		// 	icon: <Handshake className='w-12 h-12' />,
+		// },
 		// {
 		// 	tag: "Monthly",
 		// 	url: "/reports/monthly",

@@ -1,7 +1,9 @@
 import { auth } from '@/Auth'
-import TransactionsLister from '@/components/Customui/Transactions/Lister'
+import TransactionLink from '@/components/Customui/Transactions/TransactionLink'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { FetchAllTransactionsByType } from '@/lib/helpers'
-import React from 'react'
+import { cn } from '@/lib/utils'
+import React, { Suspense } from 'react'
 
 const DynamicTypesPage = async ({ params }: { params: { type: string } }) => {
 
@@ -27,8 +29,18 @@ const DynamicTypesPage = async ({ params }: { params: { type: string } }) => {
     if (transactions && transactions.length > 0) {
         return (
             <div>
-                <h1>Transactions for type: {params.type}</h1>
-                <TransactionsLister data={transactions} />
+                <h1 className='my-4 '>Transactions for type: {params.type}s</h1>
+                <Suspense fallback={<div>Loading...</div>}>
+                    <ScrollArea
+                        className={cn("mx-auto w-full flex flex-col gap-6 px-2 ")}>
+                        {
+                            transactions.map((transaction) =>
+                                <TransactionLink key={transaction.id} transaction={transaction} />
+                            )
+
+                        }
+                    </ScrollArea>
+                </Suspense>
             </div>
         )
     }

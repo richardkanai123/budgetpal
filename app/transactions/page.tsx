@@ -23,13 +23,13 @@ const TransactionsPage = async () => {
 
 
     return (
-      <div className='w-full'>
+      <div className='w-full px-2  relative'>
 
-        <h1 className='text-center text-xl font-semibold leading-4 tracking-wider mb-4'>
-          All Transactions
-        </h1>
+        <div className='w-full mx-auto flex flex-col md:flex-row items-center justify-around align-middle  gap-4 p-2 border-b mb-4'>
 
-        <div className='w-full mx-auto flex items-center justify-around align-middle gap-4 p-4'>
+          <h1 className='text-center text-xl font-semibold leading-4 tracking-wider mb-4'>
+            All Transactions
+          </h1>
 
           <Button variant="default">
             <Link href='/new-transaction' className='flex gap-2 align-middle'>
