@@ -31,7 +31,8 @@ const TransactionIcon = ({ type, category }: {
     category: string;
 }) => {
 
-    if (type === ("expense" || "income")) {
+
+    if (type === "expense" || type === "income") {
         switch (category) {
             case "shopping":
                 return <ShoppingCartIcon className='w-5 h-5 text-red-500' />;
