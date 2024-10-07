@@ -244,6 +244,7 @@ export async function AddNewTransaction(data: UserTransactionInput): Promise<{
                 category: data.category,
                 transactiondate: data.transactionDate,
                 userId: session?.user?.id as string,
+                
             }
         })
 
