@@ -9,9 +9,15 @@ generator client {
 }
 
 // local file database
+// datasource db {
+//   provider = "sqlite"
+//   url      = "file:./dev.db"
+// }
+
+// mongodb
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "mongodb"
+  url      = env("NEXT_MONGODB_URL")
 }
 
 // vercel postgressdb
@@ -23,7 +29,7 @@ datasource db {
 
 //user moder
 model User {
-  id           String        @id @unique() @default(uuid())
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
   email        String        @unique
   password     String        @unique
   createdAt    DateTime      @default(now())
@@ -34,10 +40,10 @@ model User {
 }
 
 model Transaction {
-  id              String   @id @default(uuid())
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
-  userId          String
+  userId          String   @db.ObjectId
   user            User     @relation(fields: [userId], references: [id])
   amount          Float
   category        String
