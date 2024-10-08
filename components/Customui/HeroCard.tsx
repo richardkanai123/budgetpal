@@ -65,7 +65,7 @@ const BalanceCard = async () => {
 					<CardTitle className='text-4xl font-semibold  text-center'>
 						{FormattedCurrency(totalBalance, 'KES')}
 					</CardTitle>
-					<Progress value={Math.round(BalancePercentage)} className="w-full  animate-in fade-in-60 duration-[5000]" />
+					<Progress value={Math.round(BalancePercentage)} className="w-full  animate-in fade-in-60 duration-1000" />
 				</CardHeader>
 				<CardContent className="w-full ">
 					<div className="w-full flex align-middle justify-between text-center">
