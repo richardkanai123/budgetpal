@@ -2,7 +2,7 @@
 
 import { signIn as naSignIn, signOut as naSignOut } from "@/Auth"
 import { AuthError } from "next-auth"
-import prisma from "./prisma"
+import prisma from "@/lib/prisma"
 import { auth } from "@/Auth"
 import { revalidatePath } from "next/cache"
 import { Transaction } from "@prisma/client"
